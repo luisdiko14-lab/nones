@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transaction Confirmation – AqMusic.co</title>
+  <link href="https://fonts.googleapis.com/css2?family=PayPal+Sans:wght@400;600&family=Helvetica+Neue&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f5f7fa;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #2c2e2f;
+      padding: 30px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .email-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ── TOP PAYPAL HEADER ── */
+    .pp-header {
+      background: #003087;
+      border-radius: 6px 6px 0 0;
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pp-logo {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pp-logo-text {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .pp-logo-text .pay { color: #009cde; }
+    .pp-logo-text .pal { color: #ffffff; }
+
+    .pp-header-tagline {
+      color: #aac9e8;
+      font-size: 12px;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    /* ── BODY CARD ── */
+    .email-body {
+      background: #ffffff;
+      padding: 36px 40px;
+      border-left: 1px solid #e0e4ea;
+      border-right: 1px solid #e0e4ea;
+    }
+
+    /* ── SUCCESS BADGE ── */
+    .success-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .check-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #00b300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      animation: popIn .4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes popIn {
+      0%   { transform: scale(0); opacity: 0; }
+      70%  { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    .check-circle svg { width: 22px; height: 22px; }
+
+    .success-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2c2e2f;
+      line-height: 1.2;
+    }
+
+    .success-text p {
+      font-size: 13.5px;
+      color: #6c7278;
+      margin-top: 3px;
+    }
+
+    /* ── GREETING ── */
+    .greeting {
+      font-size: 15px;
+      color: #2c2e2f;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    /* ── AMOUNT BLOCK ── */
+    .amount-block {
+      background: #f0f7ff;
+      border: 1px solid #cce3f7;
+      border-radius: 8px;
+      padding: 22px 24px;
+      margin-bottom: 26px;
+      text-align: center;
+    }
+
+    .amount-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #009cde;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .amount-value {
+      font-size: 42px;
+      font-weight: 700;
+      color: #003087;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .amount-value span {
+      font-size: 22px;
+      vertical-align: super;
+      margin-right: 2px;
+    }
+
+    .amount-currency {
+      font-size: 14px;
+      color: #6c7278;
+      margin-top: 6px;
+    }
+
+    /* ── DETAIL TABLE ── */
+    .detail-section {
+      margin-bottom: 26px;
+    }
+
+    .detail-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: #009cde;
+      font-weight: 700;
+      border-bottom: 2px solid #e8f4fc;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid #f2f4f6;
+      font-size: 14px;
+      gap: 16px;
+    }
+
+    .detail-row:last-child { border-bottom: none; }
+
+    .detail-key {
+      color: #6c7278;
+      flex-shrink: 0;
+      width: 160px;
+    }
+
+    .detail-val {
+      color: #2c2e2f;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .detail-val.mono {
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+    }
+
+    .status-pill {
+      background: #e6f9e6;
+      color: #00a300;
+      border: 1px solid #a8e6a8;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 12px;
+      display: inline-block;
+      letter-spacing: .04em;
+    }
+
+    /* ── PAYMENT METHOD ── */
+    .payment-method-card {
+      background: #fafafa;
+      border: 1px solid #e0e4ea;
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .visa-badge {
+      background: #1a1f71;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 1px;
+      padding: 6px 12px;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+
+    .pm-info { flex: 1; }
+    .pm-info .pm-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2c2e2f;
+    }
+    .pm-info .pm-sub {
+      font-size: 12px;
+      color: #6c7278;
+      margin-top: 2px;
+    }
+
+    .pm-amount {
+      font-size: 16px;
+      font-weight: 700;
+      color: #003087;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid #e8eaec;
+      margin: 24px 0;
+    }
+
+    /* ── INFO BOX ── */
+    .info-box {
+      background: #fffbea;
+      border: 1px solid #f5e070;
+      border-radius: 7px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: #6b5a00;
+      line-height: 1.6;
+      margin-bottom: 26px;
+    }
+
+    .info-box strong { color: #4a3e00; }
+
+    /* ── CTA BUTTON ── */
+    .cta-wrap { text-align: center; margin-bottom: 28px; }
+
+    .cta-btn {
+      display: inline-block;
+      background: #009cde;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      padding: 14px 38px;
+      border-radius: 30px;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+    }
+
+    .cta-btn:hover {
+      background: #007ab8;
+      transform: translateY(-1px);
+    }
+
+    /* ── HELP SECTION ── */
+    .help-links {
+      font-size: 13px;
+      color: #6c7278;
+      text-align: center;
+      line-height: 2;
+    }
+
+    .help-links a {
+      color: #009cde;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .help-links a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    .email-footer {
+      background: #f0f4f8;
+      border: 1px solid #e0e4ea;
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      padding: 24px 40px;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: #009cde;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover { text-decoration: underline; }
+
+    .footer-disclaimer {
+      font-size: 11px;
+      color: #9ca3af;
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── TRANSACTION ID STRIP ── */
+    .txn-strip {
+      background: #f7f9fc;
+      border: 1px dashed #c8d3de;
+      border-radius: 6px;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 26px;
+      font-size: 12px;
+      gap: 10px;
+    }
+
+    .txn-strip .txn-label { color: #9ca3af; }
+    .txn-strip .txn-id {
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      color: #2c2e2f;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+
+    @media (max-width: 500px) {
+      .email-body { padding: 24px 20px; }
+      .pp-header { padding: 16px 20px; }
+      .email-footer { padding: 20px 20px; }
+      .amount-value { font-size: 34px; }
+      .detail-key { width: 130px; }
+    }
+  </style>
+</head>
+<body>
+<div class="email-wrapper">
+
+  <!-- HEADER -->
+  <div class="pp-header">
+    <div class="pp-logo">
+      <div class="pp-logo-text"><span class="pay">Pay</span><span class="pal">Pal</span></div>
+    </div>
+    <div class="pp-header-tagline">
+      Receipt &amp; Confirmation<br>
+      <strong style="color:#ffffff; font-size:11px;">May 14, 2026 · 15:01:14 GMT +2</strong>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="email-body">
+
+    <!-- SUCCESS -->
+    <div class="success-badge">
+      <div class="check-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="success-text">
+        <h1>Transaction Completed!</h1>
+        <p>Your payment was processed successfully.</p>
+      </div>
+    </div>
+
+    <!-- GREETING -->
+    <p class="greeting">
+      Hi there,<br><br>
+      We're confirming that your payment to <strong>GoDaddy.com</strong> has been completed successfully.
+      Your domain registration is now active and secured to your account.
+    </p>
+
+    <!-- AMOUNT -->
+    <div class="amount-block">
+      <div class="amount-label">Total Paid</div>
+      <div class="amount-value"><span>$</span>48.97</div>
+      <div class="amount-currency">US Dollar (USD)</div>
+    </div>
+
+    <!-- TRANSACTION ID -->
+    <div class="txn-strip">
+      <span class="txn-label">Transaction ID</span>
+      <span class="txn-id">5XH291804R8273619</span>
+    </div>
+
+    <!-- ORDER DETAILS -->
+    <div class="detail-section">
+      <div class="detail-section-title">Order Details</div>
+
+      <div class="detail-row">
+        <span class="detail-key">Item Purchased</span>
+        <span class="detail-val">Domain Registration</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">Domain Name</span>
+        <span class="detail-val" style="color:#009cde; font-size:15px;">Aqmusic.co</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">Seller / Merchant</span>
+        <span class="detail-val">GoDaddy.com, LLC</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">Registration Period</span>
+        <span class="detail-val">1 Year</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">Date &amp; Time</span>
+        <span class="detail-val mono">May 14, 2026 · 14:39 GMT +2</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">Status</span>
+        <span class="detail-val"><span class="status-pill">✔ Completed</span></span>
+      </div>
+    </div>
+
+    <!-- PAYMENT BREAKDOWN -->
+    <div class="detail-section">
+      <div class="detail-section-title">Payment Breakdown</div>
+      <div class="detail-row">
+        <span class="detail-key">Subtotal</span>
+        <span class="detail-val">$48.97</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">ICANN Fee</span>
+        <span class="detail-val">$0.00</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">Tax</span>
+        <span class="detail-val">$0.00</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key" style="font-weight:700; color:#2c2e2f;">Total Charged</span>
+        <span class="detail-val" style="font-size:16px; color:#003087;">$48.97 USD</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- PAYMENT METHOD -->
+    <div class="detail-section-title" style="font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:#009cde; font-weight:700; border-bottom:2px solid #e8f4fc; padding-bottom:8px; margin-bottom:14px;">Payment Method</div>
+    <div class="payment-method-card">
+      <div class="visa-badge">VISA</div>
+      <div class="pm-info">
+        <div class="pm-name">Visa Credit Card</div>
+        <div class="pm-sub">Ending in •••• 1112</div>
+      </div>
+      <div class="pm-amount">$48.97</div>
+    </div>
+
+    <!-- INFO BOX -->
+    <div class="info-box">
+      <strong>💡 What's next?</strong><br>
+      Your domain <strong>aqmusic.co</strong> is now registered and active. Log in to your GoDaddy account to manage DNS settings, connect your website, or set up email. Renewal will be due in 1 year.
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrap">
+      <a href="#" class="cta-btn">View on GoDaddy</a>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- HELP -->
+    <div class="help-links">
+      Questions about this transaction?<br>
+      <a href="#">Resolution Center</a> &nbsp;·&nbsp; <a href="#">Contact Support</a> &nbsp;·&nbsp; <a href="#">Dispute a Charge</a>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="email-footer">
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Legal Agreements</a>
+      <a href="#">Help Center</a>
+      <a href="#">Unsubscribe</a>
+    </div>
+    <p class="footer-disclaimer">
+      This email was sent to confirm your transaction. PayPal is located at 2211 North First Street, San Jose, CA 95131, USA. © 2026 PayPal, Inc. All rights reserved. PayPal is a registered trademark of PayPal, Inc.<br><br>
+      This is a service-related email. You cannot opt out of service-related emails.
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
